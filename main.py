@@ -16,7 +16,7 @@ def not_found(error):
 
 
 @app.route('/api/users', methods=['POST'])
-def create_user():
+def sign_up():
     if not request.json:
         return jsonify({
             'result': 'Empty request'
@@ -38,7 +38,7 @@ def create_user():
         })
     user = User()
     user.nickname = request.json['nickname']
-    user.created = str(datetime.datetime.now()).split('.')[0]
+    user.created = str(datetime.datetime.now()).split(' ')[0]
     user.set_password(request.json['password'])
     db_sess.add(user)
     db_sess.commit()
@@ -54,7 +54,7 @@ def create_user():
 
 
 @app.route('/api/users/<nickname>', methods=['GET'])
-def login(nickname):
+def sign_in(nickname):
     if not request.json:
         return jsonify({
             'result': 'Empty request'
