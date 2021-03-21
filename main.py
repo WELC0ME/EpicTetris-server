@@ -15,7 +15,7 @@ def not_found(error):
     }), 404)
 
 
-@app.route('/users', methods=['POST'])
+@app.route('/api/users', methods=['POST'])
 def create_user():
     if not request.json:
         return jsonify({
@@ -47,7 +47,7 @@ def create_user():
     })
 
 
-@app.route('/users/<nickname>', methods=['GET'])
+@app.route('/api/users/<nickname>', methods=['GET'])
 def login(nickname):
     if not request.json:
         return jsonify({
@@ -74,7 +74,7 @@ def login(nickname):
     })
 
 
-@app.route('/users/', methods=['GET'])
+@app.route('/api/users/', methods=['GET'])
 def get_users():
     db_sess = db_session.create_session()
     users = db_sess.query(User).all()
@@ -88,7 +88,7 @@ def get_users():
     })
 
 
-@app.route('/users/<nickname>', methods=['PUT'])
+@app.route('/api/users/<nickname>', methods=['PUT'])
 def edit_user(nickname):
     if not request.json:
         return jsonify({
@@ -114,7 +114,7 @@ def edit_user(nickname):
     })
 
 
-@app.route('/users/', methods=['DELETE'])
+@app.route('/api/users/', methods=['DELETE'])
 def clear():
     db_sess = db_session.create_session()
     users = db_sess.query(User).all()
