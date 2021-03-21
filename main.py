@@ -127,5 +127,4 @@ def clear():
 
 
 if __name__ == '__main__':
-    db_session.global_init("db/tetris.db")
     app.run()
