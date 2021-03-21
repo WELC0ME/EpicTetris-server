@@ -44,6 +44,12 @@ def create_user():
     db_sess.commit()
     return jsonify({
         'result': 'OK',
+        'user': user.to_dict(only=(
+            'nickname',
+            'rating',
+            'best',
+            'created'
+        )),
     })
 
 
@@ -71,6 +77,12 @@ def login(nickname):
         })
     return jsonify({
         'result': 'OK',
+        'user': user.to_dict(only=(
+            'nickname',
+            'rating',
+            'best',
+            'created'
+        )),
     })
 
 
@@ -108,6 +120,7 @@ def edit_user(nickname):
         })
     user.rating += int(request.json['game_result'])
     user.best = max(user.best, int(request.json['game_result']))
+    db_sess.merge(user)
     db_sess.commit()
     return jsonify({
         'result': 'OK'

@@ -1,7 +1,7 @@
 from requests import get, post, put, delete
 
-server = 'http://127.0.0.1:5000/api/users'
-# server = 'https://epic-tetris-server.herokuapp.com/api/users'
+# server = 'http://127.0.0.1:5000/api/users'
+server = 'https://epic-tetris-server.herokuapp.com/api/users'
 
 print('Create user')
 print(post(server, json={
