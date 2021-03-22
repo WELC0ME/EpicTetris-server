@@ -13,6 +13,7 @@ class DataBase:
         try:
             self.cur.execute('SELECT * FROM users')
         except Exception:
+            self.cur.execute("ROLLBACK")
             self.cur.execute("""CREATE TABLE users (
                 id INTEGER PRIMARY KEY,
                 data VARCHAR
