@@ -114,7 +114,7 @@ def edit_user(nickname):
         if user['nickname'] == nickname:
             user['rating'] += int(request.json['game_result'])
             user['best'] = max(user['best'], int(request.json['game_result']))
-            database.execute("UPDATE user SET data = %s WHERE id = %s",
+            database.execute("UPDATE users SET data = %s WHERE id = %s",
                              (str(user), ids[i]))
             return jsonify({
                 'result': 'OK'
