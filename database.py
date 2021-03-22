@@ -15,6 +15,9 @@ class DataBase:
             self.cur.execute(request, params)
         else:
             self.cur.execute(request)
-        res = self.cur.fetchall()
+        try:
+            res = self.cur.fetchall()
+        except psycopg2.ProgrammingError:
+            res = []
         self.conn.commit()
         return res
