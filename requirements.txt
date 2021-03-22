@@ -1,5 +1,4 @@
 flask
-sqlalchemy
-SQLAlchemy-serializer
+psycopg2
 Werkzeug
 gunicorn

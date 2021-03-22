@@ -1,7 +1,7 @@
 from flask import Flask, make_response, jsonify, request
+from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
-from db import db_session
-from db.user import User
+from database import DataBase
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '72697676798779827668'
@@ -28,28 +28,27 @@ def sign_up():
         return jsonify({
             'result': 'Bad request'
         })
-    db_sess = db_session.create_session()
-    user = db_sess.query(User).filter(
-        User.nickname == request.json['nickname']
-    ).first()
-    if user:
+    database = DataBase()
+    res = database.execute('SELECT * FROM users')
+    ids = [i[0] for i in res]
+    users = [eval(i[1]) for i in res]
+    if any([user['nickname'] == request.json['nickname'] for user in users]):
         return jsonify({
             'result': 'Nickname is already exists'
         })
-    user = User()
-    user.nickname = request.json['nickname']
-    user.created = str(datetime.datetime.now()).split(' ')[0]
-    user.set_password(request.json['password'])
-    db_sess.add(user)
-    db_sess.commit()
+    user = {
+        'nickname': request.json['nickname'],
+        'password': generate_password_hash(request.json['password']),
+        'rating': 0,
+        'best': 0,
+        'created': str(datetime.datetime.now()).split(' ')[0],
+    }
+    database.execute("INSERT INTO users VALUES (%s, %s)",
+                     (max(ids) + 1, str(user)))
+
     return jsonify({
         'result': 'OK',
-        'user': user.to_dict(only=(
-            'nickname',
-            'rating',
-            'best',
-            'created'
-        )),
+        'user': user,
     })
 
 
@@ -65,38 +64,31 @@ def sign_in(nickname):
         return jsonify({
             'result': 'Bad request'
         })
-    db_sess = db_session.create_session()
-    user = db_sess.query(User).filter(User.nickname == nickname).first()
-    if not user:
-        return jsonify({
-            'result': 'Not found'
-        })
-    if not user.check_password(request.json['password']):
-        return jsonify({
-            'result': 'Incorrect password'
-        })
+
+    database = DataBase()
+    users = [eval(i[0]) for i in database.execute('SELECT data FROM users')]
+    for user in users:
+        if user['nickname'] == nickname:
+            if not check_password_hash(user['password'],
+                                       request.json['password']):
+                return jsonify({
+                    'result': 'Incorrect password'
+                })
+            return jsonify({
+                'result': 'OK',
+                'user': user,
+            })
     return jsonify({
-        'result': 'OK',
-        'user': user.to_dict(only=(
-            'nickname',
-            'rating',
-            'best',
-            'created'
-        )),
+        'result': 'Not found'
     })
 
 
 @app.route('/api/users/', methods=['GET'])
 def get_users():
-    db_sess = db_session.create_session()
-    users = db_sess.query(User).all()
+    database = DataBase()
+    users = [eval(i[0]) for i in database.execute('SELECT data FROM users')]
     return jsonify({
-        'users': [user.to_dict(only=(
-            'nickname',
-            'rating',
-            'best',
-            'created'
-        )) for user in users],
+        'users': users,
     })
 
 
@@ -112,28 +104,29 @@ def edit_user(nickname):
         return jsonify({
             'result': 'Bad request'
         })
-    db_sess = db_session.create_session()
-    user = db_sess.query(User).filter(User.nickname == nickname).first()
-    if not user:
-        return jsonify({
-            'result': 'Not found'
-        })
-    user.rating += int(request.json['game_result'])
-    user.best = max(user.best, int(request.json['game_result']))
-    db_sess.merge(user)
-    db_sess.commit()
+
+    database = DataBase()
+    res = database.execute('SELECT * FROM users')
+    ids = [i[0] for i in res]
+    users = [eval(i[1]) for i in res]
+    for i, user in enumerate(users):
+        if user['nickname'] == nickname:
+            user['rating'] += int(request.json['game_result'])
+            user['best'] = max(user['best'], int(request.json['game_result']))
+            database.execute("UPDATE user SET data = %s WHERE id = %s",
+                             (str(user), ids[i]))
+            return jsonify({
+                'result': 'OK'
+            })
     return jsonify({
-        'result': 'OK'
+        'result': 'Not found'
     })
 
 
 @app.route('/api/users/', methods=['DELETE'])
 def clear():
-    db_sess = db_session.create_session()
-    users = db_sess.query(User).all()
-    for user in users:
-        db_sess.delete(user)
-        db_sess.commit()
+    database = DataBase()
+    database.execute('DELETE FROM users')
     return jsonify({
         'result': 'OK'
     })
