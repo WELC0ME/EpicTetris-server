@@ -10,16 +10,6 @@ class DataBase:
         self.cur.execute("ROLLBACK")
         self.conn.commit()
 
-        try:
-            self.cur.execute('SELECT * FROM users')
-        except Exception:
-            self.cur.execute("ROLLBACK")
-            self.cur.execute("""CREATE TABLE users (
-                id INTEGER PRIMARY KEY,
-                data VARCHAR
-            )""")
-            self.conn.commit()
-
     def execute(self, request, params=()):
         if len(params) > 0:
             self.cur.execute(request, params)

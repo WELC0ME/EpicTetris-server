@@ -31,6 +31,7 @@ def sign_up():
     database = DataBase()
     res = database.execute('SELECT * FROM users')
     ids = [i[0] for i in res]
+    id_ = max(ids) + 1 if len(ids) > 0 else 0
     users = [eval(i[1]) for i in res]
     if any([user['nickname'] == request.json['nickname'] for user in users]):
         return jsonify({
@@ -44,7 +45,7 @@ def sign_up():
         'created': str(datetime.datetime.now()).split(' ')[0],
     }
     database.execute("INSERT INTO users VALUES (%s, %s)",
-                     (max(ids) + 1, str(user)))
+                     (id_, str(user)))
 
     return jsonify({
         'result': 'OK',
