@@ -15,7 +15,7 @@ class DataBase:
         except Exception:
             self.cur.execute("""CREATE TABLE users (
                 id INTEGER PRIMARY KEY,
-                data VARCHAR,
+                data VARCHAR
             )""")
             self.conn.commit()
 
