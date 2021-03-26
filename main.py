@@ -143,7 +143,7 @@ def generate_token(username, result):
     numbers = [int(result)] + [32767 + ord(i) for i in username]
     numbers = [(i >> 119) ^ 37 for i in numbers]
     numbers = generate_password_hash('_'.join([chr(i) for i in numbers]))
-    return generate_password_hash(str(numbers))
+    return str(generate_password_hash(str(numbers)))
 
 
 if __name__ == '__main__':
