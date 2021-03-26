@@ -118,7 +118,7 @@ def edit_user(nickname):
             nickname,
             request.json['game_result'],
     ):
-        pribnt(request.json['token'])
+        print(request.json['token'])
         print(generate_token(nickname, request.json['game_result']))
         return jsonify({
             'result': 'Incorrect token'
