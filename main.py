@@ -114,14 +114,11 @@ def edit_user(nickname):
         return jsonify({
             'result': 'Bad request'
         })
-    elif request.json['token'] != generate_token(
+    elif not check_token(
+            request.json['token'],
             nickname,
             request.json['game_result'],
     ):
-        print(nickname)
-        print(request.json['game_result'])
-        print(request.json['token'])
-        print(generate_token(nickname, request.json['game_result']))
         return jsonify({
             'result': 'Incorrect token'
         })
@@ -143,11 +140,11 @@ def edit_user(nickname):
     })
 
 
-def generate_token(username, result):
+def check_token(token, username, result):
     numbers = [int(result)] + [32767 + ord(i) for i in str(username)]
     numbers = [(i >> 119) ^ 37 for i in numbers]
-    numbers = generate_password_hash('_'.join([chr(i) for i in numbers]))
-    return str(generate_password_hash(str(numbers)))
+    numbers = '_'.join([chr(i) for i in numbers])
+    return check_password_hash(token, numbers)
 
 
 if __name__ == '__main__':
