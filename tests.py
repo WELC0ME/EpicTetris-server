@@ -1,4 +1,4 @@
-from requests import get, post, put, delete
+from requests import get, post, put
 
 server = 'https://epic-tetris-server.herokuapp.com/api/users'
 
