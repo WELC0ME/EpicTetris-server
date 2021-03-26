@@ -89,8 +89,9 @@ def get_users():
     database = DataBase()
     users = []
     for i in database.execute('SELECT data FROM users'):
-        del i['password']
-        users.append(i)
+        user = eval(i[0])
+        del user['password']
+        users.append(user)
     return jsonify({
         'users': users,
     })
