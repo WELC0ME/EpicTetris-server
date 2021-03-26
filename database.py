@@ -8,8 +8,6 @@ class DataBase:
         self.conn = psycopg2.connect(os.environ['DATABASE_URL'])
         self.cur = self.conn.cursor()
         self.cur.execute("ROLLBACK")
-        self.conn.commit()
-
         try:
             self.cur.execute('SELECT * FROM users')
         except Exception:
@@ -17,7 +15,7 @@ class DataBase:
                 id INTEGER PRIMARY KEY,
                 data VARCHAR
             )""")
-            self.conn.commit()
+        self.conn.commit()
 
     def execute(self, request, params=()):
         if len(params) > 0:
