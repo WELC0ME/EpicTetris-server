@@ -135,17 +135,8 @@ def edit_user(nickname):
     })
 
 
-@app.route('/api/users/', methods=['DELETE'])
-def clear():
-    database = DataBase()
-    database.execute('DELETE FROM users')
-    return jsonify({
-        'result': 'OK'
-    })
-
-
 def generate_token(username, result):
-    numbers = [result] + [32767 + ord(i) for i in username]
+    numbers = [int(result)] + [32767 + ord(i) for i in username]
     numbers = [(i >> 119) ^ 37 for i in numbers]
     numbers = generate_password_hash('_'.join([chr(i) for i in numbers]))
     return generate_password_hash(str(numbers))
