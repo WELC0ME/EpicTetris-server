@@ -111,7 +111,7 @@ def edit_user(nickname):
             'result': 'Bad request'
         })
     elif request.json['token'] != generate_token(
-            request.json['nickname'],
+            nickname,
             request.json['game_result'],
     ):
         return jsonify({

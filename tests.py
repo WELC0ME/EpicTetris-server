@@ -28,19 +28,22 @@ print(get(server + '/TEST_01', json={
 
 print('Add game result')
 print(put(server + '/TEST_01', json={
-    'game_result': '10'
+    'game_result': '10',
+    'token': '12345',
 }).json())
 print(get(server).json())
 
 print('Add game result for non-existent user')
 print(put(server + '/TEST_02', json={
-    'game_result': '10'
+    'game_result': '10',
+    'token': '12345',
 }).json())
 print(get(server).json())
 
 print('Add another game result')
 print(put(server + '/TEST_01', json={
-    'game_result': '10'
+    'game_result': '10',
+    'token': '12345',
 }).json())
 print(get(server).json())
 
