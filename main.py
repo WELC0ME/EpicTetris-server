@@ -32,6 +32,10 @@ def sign_up():
     res = database.execute('SELECT * FROM users')
     ids = [i[0] for i in res]
     id_ = max(ids) + 1 if len(ids) > 0 else 0
+    if id_ == 10000:
+        return jsonify({
+            'result': 'Too many users',
+        })
     users = [eval(i[1]) for i in res]
     if any([user['nickname'] == request.json['nickname'] for user in users]):
         return jsonify({
