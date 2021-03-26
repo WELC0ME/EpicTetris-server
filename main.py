@@ -87,7 +87,10 @@ def sign_in(nickname):
 @app.route('/api/users/', methods=['GET'])
 def get_users():
     database = DataBase()
-    users = [eval(i[0]) for i in database.execute('SELECT data FROM users')]
+    users = []
+    for i in database.execute('SELECT data FROM users'):
+        del i['password']
+        users.append(i)
     return jsonify({
         'users': users,
     })
@@ -101,11 +104,18 @@ def edit_user(nickname):
         })
     elif not all(key in request.json for key in [
         'game_result',
+        'token',
     ]):
         return jsonify({
             'result': 'Bad request'
         })
-
+    elif request.json['token'] != generate_token(
+            request.json['nickname'],
+            request.json['game_result'],
+    ):
+        return jsonify({
+            'result': 'Incorrect token'
+        })
     database = DataBase()
     res = database.execute('SELECT * FROM users')
     ids = [i[0] for i in res]
@@ -131,6 +141,13 @@ def clear():
     return jsonify({
         'result': 'OK'
     })
+
+
+def generate_token(username, result):
+    numbers = [result] + [32767 + ord(i) for i in username]
+    numbers = [(i >> 119) ^ 37 for i in numbers]
+    numbers = generate_password_hash('_'.join([chr(i) for i in numbers]))
+    return generate_password_hash(str(numbers))
 
 
 if __name__ == '__main__':
